@@ -4,6 +4,8 @@ import {
   usePortfolio,
   useBuckets,
   usePosition,
+  useSnapshots,
+  useCreateSnapshot,
   useTransactions,
   useCreateTransaction,
   useCreateFxRate,
@@ -23,11 +25,7 @@ import type { TransactionType, Currency, FxRateSource } from "@/types/api";
 
 const transactionTypeOptions: { value: TransactionType; label: string }[] = [
   { value: "CONTRIBUTION", label: "Contribuição" },
-  { value: "WITHDRAWAL", label: "Resgate" },
-  { value: "INCOME", label: "Rendimento" },
-  { value: "FEE", label: "Taxa" },
-  { value: "TAX", label: "Imposto" },
-  { value: "ADJUSTMENT", label: "Ajuste" },
+  { value: "WITHDRAWAL", label: "Retirada" },
 ];
 
 const fxRateSourceOptions: { value: FxRateSource; label: string }[] = [
@@ -54,11 +52,23 @@ export function BucketDetail() {
   );
   const [fxRateValue, setFxRateValue] = useState("");
   const [fxRateSource, setFxRateSource] = useState<FxRateSource>("MANUAL");
+  const [showSnapshotForm, setShowSnapshotForm] = useState(false);
+  const [snapshotDate, setSnapshotDate] = useState(() =>
+    new Date().toISOString().slice(0, 10)
+  );
+  const [snapshotTotalValue, setSnapshotTotalValue] = useState("");
 
   const { data: portfolio } = usePortfolio(portfolioId);
   const { data: buckets } = useBuckets(portfolioId);
   const bucket = buckets?.find((b) => b.id === bucketId);
   const { data: position } = usePosition(portfolioId, bucketId);
+  const { data: snapshots = [] } = useSnapshots(portfolioId, bucketId);
+  const createSnapshot = useCreateSnapshot(portfolioId ?? "", bucketId ?? "", {
+    onSuccess: () => {
+      setShowSnapshotForm(false);
+      setSnapshotTotalValue("");
+    },
+  });
   const { data: transactions } = useTransactions(portfolioId);
   const isUsdBucket = bucket?.reference_currency === "USD";
   const { data: fxRates = [], isLoading: fxRatesLoading } = useFxRates({
@@ -93,6 +103,20 @@ export function BucketDetail() {
       to: "BRL",
       rate: rateNum,
       source: fxRateSource,
+    });
+  };
+
+  const handleSubmitSnapshot = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bucket || !snapshotTotalValue.trim()) return;
+    const valueNum = Math.round(
+      parseFloat(snapshotTotalValue.replace(",", ".")) * 100
+    );
+    if (Number.isNaN(valueNum) || valueNum < 0) return;
+    createSnapshot.mutate({
+      date: snapshotDate,
+      totalValue: valueNum,
+      currency: bucket.reference_currency as "BRL" | "USD",
     });
   };
 
@@ -194,6 +218,111 @@ export function BucketDetail() {
           </CardContent>
         </Card>
       ) : null}
+
+      {/* Snapshots */}
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-slate-800">Snapshots</h2>
+        <Button
+          onClick={() => setShowSnapshotForm((v) => !v)}
+          variant="primary"
+          size="sm"
+        >
+          {showSnapshotForm ? "Cancelar" : "Novo snapshot"}
+        </Button>
+      </div>
+
+      {showSnapshotForm ? (
+        <Card className="mb-6">
+          <CardContent>
+            <form
+              onSubmit={handleSubmitSnapshot}
+              className="flex flex-col gap-4 max-w-md"
+            >
+              <Input
+                label="Data"
+                type="date"
+                value={snapshotDate}
+                onChange={(e) => setSnapshotDate(e.target.value)}
+                required
+                disabled={createSnapshot.isPending}
+              />
+              <Input
+                label="Valor total"
+                type="text"
+                inputMode="decimal"
+                value={snapshotTotalValue}
+                onChange={(e) => setSnapshotTotalValue(e.target.value)}
+                placeholder="0,00"
+                required
+                disabled={createSnapshot.isPending}
+              />
+              {createSnapshot.error ? (
+                <p className="text-sm text-red-600">
+                  {createSnapshot.error.message}
+                </p>
+              ) : null}
+              <Button
+                type="submit"
+                disabled={createSnapshot.isPending}
+              >
+                {createSnapshot.isPending ? "Salvando..." : "Salvar snapshot"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {snapshots.length === 0 ? (
+        <Card className="mb-8">
+          <CardContent>
+            <p className="text-slate-600">Nenhum snapshot neste bucket.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="mb-8">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-slate-200 bg-slate-50">
+                  <th className="px-6 py-3 text-left font-medium text-slate-700">
+                    Data
+                  </th>
+                  <th className="px-6 py-3 text-left font-medium text-slate-700">
+                    Tipo
+                  </th>
+                  <th className="px-6 py-3 text-right font-medium text-slate-700">
+                    Valor total
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {snapshots.map((snap) => (
+                  <tr
+                    key={snap.id}
+                    className="border-b border-slate-100 hover:bg-slate-50"
+                  >
+                    <td className="px-6 py-3 text-slate-600">
+                      {formatDate(snap.date)}
+                    </td>
+                                        <td className="px-6 py-3 text-slate-700">
+                      {snap.type === "MANUAL"
+                        ? "Manual"
+                        : snap.type === "CONTRIBUTION"
+                          ? "Contribuição"
+                          : snap.type === "WITHDRAWAL"
+                            ? "Retirada"
+                            : snap.type}
+                    </td>
+                    <td className="px-6 py-3 text-right font-medium text-slate-900">
+                      {formatFn(snap.total_value)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
 
       {/* New transaction */}
       <div className="mb-6 flex items-center justify-between">
@@ -396,7 +525,13 @@ export function BucketDetail() {
                     <td className="px-6 py-3 text-slate-600">
                       {formatDate(tx.date)}
                     </td>
-                    <td className="px-6 py-3 text-slate-700">{tx.type}</td>
+                                        <td className="px-6 py-3 text-slate-700">
+                      {tx.type === "CONTRIBUTION"
+                        ? "Contribuição"
+                        : tx.type === "WITHDRAWAL"
+                          ? "Retirada"
+                          : tx.type}
+                    </td>
                     <td
                       className={`px-6 py-3 text-right font-medium ${
                         tx.type === "CONTRIBUTION" || tx.type === "INCOME"

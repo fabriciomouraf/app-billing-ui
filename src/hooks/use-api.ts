@@ -49,6 +49,53 @@ export function usePosition(
   });
 }
 
+export function useSnapshots(
+  portfolioId: string | undefined,
+  bucketId: string | undefined,
+  params?: { from?: string; to?: string },
+  enabled = true
+) {
+  return useQuery({
+    queryKey: [
+      "portfolios",
+      portfolioId,
+      "buckets",
+      bucketId,
+      "snapshots",
+      params?.from,
+      params?.to,
+    ],
+    queryFn: () =>
+      api.getSnapshots(portfolioId!, bucketId!, params).then((r) => r.snapshots),
+    enabled: enabled && !!portfolioId && !!bucketId,
+  });
+}
+
+export function useCreateSnapshot(
+  portfolioId: string,
+  bucketId: string,
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof api.createSnapshot>>,
+    Error,
+    Parameters<typeof api.createSnapshot>[2]
+  >
+) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: Parameters<typeof api.createSnapshot>[2]) =>
+      api.createSnapshot(portfolioId, bucketId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: ["portfolios", portfolioId, "buckets", bucketId, "snapshots"],
+      });
+      qc.invalidateQueries({
+        queryKey: ["portfolios", portfolioId, "buckets", bucketId, "position"],
+      });
+    },
+    ...options,
+  });
+}
+
 export function useTransactions(
   portfolioId: string | undefined,
   enabled = true

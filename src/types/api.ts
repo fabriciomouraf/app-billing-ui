@@ -137,3 +137,21 @@ export interface CreateFxRateBody {
   rate: number;
   source: FxRateSource;
 }
+
+export interface Snapshot {
+  id: string;
+  bucket_id: string;
+  date: string;
+  total_value: number;
+  currency: string;
+  type: string;
+  is_initial: number;
+  invested_value_brl: number | null;
+  created_at: string | null;
+}
+
+export interface CreateSnapshotBody {
+  date: string;
+  totalValue: number;
+  currency?: Currency;
+}

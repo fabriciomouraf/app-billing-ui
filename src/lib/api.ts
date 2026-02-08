@@ -3,11 +3,13 @@ import type {
   CreateBucketBody,
   CreateFxRateBody,
   CreatePortfolioBody,
+  CreateSnapshotBody,
   CreateTransactionBody,
   CreateUserBody,
   FxRate,
   Portfolio,
   Position,
+  Snapshot,
   Transaction,
   UpdateBucketBody,
   User,
@@ -113,6 +115,30 @@ export const api = {
   getPosition: (portfolioId: string, bucketId: string) =>
     fetchApi<Position>(
       `/portfolios/${portfolioId}/buckets/${bucketId}/position`
+    ),
+
+  // Snapshots
+  getSnapshots: (
+    portfolioId: string,
+    bucketId: string,
+    params?: { from?: string; to?: string }
+  ) => {
+    const search = new URLSearchParams();
+    if (params?.from) search.set("from", params.from);
+    if (params?.to) search.set("to", params.to);
+    const q = search.toString() ? `?${search}` : "";
+    return fetchApi<{ snapshots: Snapshot[] }>(
+      `/portfolios/${portfolioId}/buckets/${bucketId}/snapshots${q}`
+    );
+  },
+  createSnapshot: (
+    portfolioId: string,
+    bucketId: string,
+    body: CreateSnapshotBody
+  ) =>
+    fetchApi<Snapshot>(
+      `/portfolios/${portfolioId}/buckets/${bucketId}/snapshots`,
+      { method: "POST", body: JSON.stringify(body) }
     ),
 
   // Transactions
