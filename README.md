@@ -37,6 +37,16 @@ Baseado em [vercel-react-native-skills](.agents/skills/vercel-react-native-skill
 
 O Vite está configurado para fazer proxy de `/api` para o backend em `localhost:8787`.
 
+## Deploy na Cloudflare Pages
+
+1. Conecte o repositório ao Cloudflare Pages e use:
+   - **Build command**: `npm run build`
+   - **Output directory**: `dist`
+
+2. Configure a variável de ambiente `VITE_API_URL` no painel do Pages com a URL da API (ex: `https://app-billing.SEU-SUBDOMINIO.workers.dev/api`).
+
+3. O arquivo `public/_redirects` já configura o fallback SPA (todas as rotas servem `index.html`).
+
 ## Estrutura
 
 ```
