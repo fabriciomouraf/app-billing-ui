@@ -150,6 +150,50 @@ export function useCreateTransaction(
   });
 }
 
+export function useFxRates(params: {
+  from?: string;
+  to?: string;
+  date?: string;
+  enabled?: boolean;
+}) {
+  const { from, to, date, enabled = true } = params;
+  return useQuery({
+    queryKey: ["fx-rates", from, to, date],
+    queryFn: async () => {
+      const res = date
+        ? await api.getFxRates({ date })
+        : await api.getFxRates({ from, to });
+      let list = res.fxRates;
+      if (date && from && to) {
+        list = list.filter(
+          (fx) => fx.from_currency === from && fx.to_currency === to
+        );
+      }
+      if (list.length === 0 && date && from && to) {
+        const fallback = await api.getFxRates({ from, to });
+        list = fallback.fxRates;
+      }
+      return list;
+    },
+    enabled: enabled && !!(from && to),
+  });
+}
+
+export function useCreateFxRate(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof api.createFxRate>>,
+    Error,
+    Parameters<typeof api.createFxRate>[0]
+  >
+) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: api.createFxRate,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["fx-rates"] }),
+    ...options,
+  });
+}
+
 export function useCreateUser(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof api.createUser>>,

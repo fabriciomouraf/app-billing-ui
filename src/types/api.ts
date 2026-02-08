@@ -122,3 +122,13 @@ export interface CreateTransactionBody {
   fxRateId?: string | null;
   description?: string;
 }
+
+export type FxRateSource = "MANUAL" | "API";
+
+export interface CreateFxRateBody {
+  date: string;
+  from: Currency;
+  to: Currency;
+  rate: number;
+  source: FxRateSource;
+}

@@ -1,6 +1,7 @@
 import type {
   Bucket,
   CreateBucketBody,
+  CreateFxRateBody,
   CreatePortfolioBody,
   CreateTransactionBody,
   CreateUserBody,
@@ -127,4 +128,9 @@ export const api = {
       `/fx-rates${q}`
     );
   },
+  createFxRate: (body: CreateFxRateBody) =>
+    fetchApi<FxRate>("/fx-rates", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
 };
