@@ -6,10 +6,10 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { api } from "@/lib/api";
+import { api, setAuthToken } from "@/lib/api";
 import type { User } from "@/types/api";
 
-const STORAGE_KEY = "billing-user";
+const STORAGE_KEY = "billing-token";
 
 interface AuthContextValue {
   user: User | null;
@@ -20,12 +20,29 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function loadStoredUser(): User | null {
+function decodeJwtPayload(token: string): { sub?: string } {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return null;
-    return JSON.parse(stored) as User;
+    const parts = token.split(".");
+    if (parts.length !== 3) return {};
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    return JSON.parse(atob(base64)) as { sub?: string };
   } catch {
+    return {};
+  }
+}
+
+async function loadSession(): Promise<{ user: User; token: string } | null> {
+  try {
+    const token = localStorage.getItem(STORAGE_KEY);
+    if (!token) return null;
+    const { sub } = decodeJwtPayload(token);
+    if (!sub) return null;
+    setAuthToken(token);
+    const user = await api.getUser(sub);
+    return { user, token };
+  } catch {
+    localStorage.removeItem(STORAGE_KEY);
+    setAuthToken(null);
     return null;
   }
 }
@@ -35,23 +52,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const stored = loadStoredUser();
-    setUser(stored);
-    setIsLoading(false);
+    loadSession().then((session) => {
+      if (session) {
+        setUser(session.user);
+      }
+      setIsLoading(false);
+    });
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const userWithPassword = await api.getUserByEmail(email);
-    if (userWithPassword.password !== password) {
-      throw new Error("Email ou senha inválidos");
+    const { token } = await api.login(email, password);
+    setAuthToken(token);
+    const { sub } = decodeJwtPayload(token);
+    if (!sub) {
+      setAuthToken(null);
+      throw new Error("Token inválido");
     }
-    const { password: _, ...userWithoutPassword } = userWithPassword;
-    setUser(userWithoutPassword);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(userWithoutPassword));
+    const loggedUser = await api.getUser(sub);
+    setUser(loggedUser);
+    localStorage.setItem(STORAGE_KEY, token);
   }, []);
 
   const logout = useCallback(() => {
     setUser(null);
+    setAuthToken(null);
     localStorage.removeItem(STORAGE_KEY);
   }, []);
 

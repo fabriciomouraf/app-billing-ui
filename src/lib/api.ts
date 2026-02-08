@@ -16,16 +16,31 @@ import type {
 
 const API_BASE = "/api";
 
+let authToken: string | null = null;
+
+export function setAuthToken(token: string | null) {
+  authToken = token;
+}
+
+export function getAuthToken() {
+  return authToken;
+}
+
 async function fetchApi<T>(
   path: string,
   options?: RequestInit
 ): Promise<T> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options?.headers as Record<string, string>),
+  };
+  if (authToken) {
+    headers["Authorization"] = `Bearer ${authToken}`;
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
     ...options,
+    headers,
   });
 
   if (!res.ok) {
@@ -40,6 +55,13 @@ async function fetchApi<T>(
 
 export const api = {
   getHealth: () => fetchApi<{ ok: boolean }>("/health"),
+
+  // Auth
+  login: (email: string, password: string) =>
+    fetchApi<{ token: string }>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    }),
 
   // Users
   getUsers: () => fetchApi<{ users: User[] }>("/users"),
