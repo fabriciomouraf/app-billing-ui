@@ -20,6 +20,11 @@ export interface User {
   email: string;
 }
 
+/** Usado apenas na resposta do login - contém password para validação */
+export interface UserWithPassword extends User {
+  password: string;
+}
+
 export interface Portfolio {
   id: string;
   user_id: string;

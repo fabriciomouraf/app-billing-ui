@@ -1,4 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/Button";
 
 const navItems = [
   { to: "/", label: "Dashboard" },
@@ -8,6 +10,7 @@ const navItems = [
 
 export function Layout() {
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -19,8 +22,8 @@ export function Layout() {
           >
             Billing
           </Link>
-          <nav className="flex gap-6">
-            {navItems.map((item) => {
+          <nav className="flex items-center gap-6">
+                {navItems.map((item) => {
               const isActive =
                 item.to === "/"
                   ? location.pathname === "/"
@@ -39,6 +42,12 @@ export function Layout() {
                 </Link>
               );
             })}
+            <div className="flex items-center gap-3 border-l border-slate-200 pl-6">
+              <span className="text-sm text-slate-600">{user?.name}</span>
+              <Button variant="ghost" size="sm" onClick={logout}>
+                Sair
+              </Button>
+            </div>
           </nav>
         </div>
       </header>

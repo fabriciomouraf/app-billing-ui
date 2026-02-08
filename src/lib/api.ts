@@ -11,6 +11,7 @@ import type {
   Transaction,
   UpdateBucketBody,
   User,
+  UserWithPassword,
 } from "@/types/api";
 
 const API_BASE = "/api";
@@ -43,6 +44,8 @@ export const api = {
   // Users
   getUsers: () => fetchApi<{ users: User[] }>("/users"),
   getUser: (id: string) => fetchApi<User>(`/users/${id}`),
+  getUserByEmail: (email: string) =>
+    fetchApi<UserWithPassword>(`/users?email=${encodeURIComponent(email)}`),
   createUser: (body: CreateUserBody) =>
     fetchApi<User>("/users", {
       method: "POST",
