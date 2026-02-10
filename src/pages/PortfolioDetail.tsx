@@ -15,6 +15,7 @@ import {
   Input,
   Select,
 } from "@/components/ui";
+import { useHideValues, maskValue } from "@/contexts/HideValuesContext";
 import { formatCurrencyBRL, formatCurrencyUSD, formatDate } from "@/lib/formatters";
 import type { Bucket, BucketType, Currency } from "@/types/api";
 
@@ -50,6 +51,7 @@ export function PortfolioDetail() {
   const [bucketType, setBucketType] = useState<BucketType>("FIXED_INCOME");
   const [bucketCurrency, setBucketCurrency] = useState<Currency>("BRL");
 
+  const { hideValues } = useHideValues();
   const { data: portfolio, isLoading: loadingPortfolio, error } = usePortfolio(portfolioId);
   const { data: buckets, isLoading: loadingBuckets } = useBuckets(portfolioId);
   const { data: transactions } = useTransactions(portfolioId);
@@ -232,7 +234,7 @@ export function PortfolioDetail() {
                             : "text-slate-900"
                         }`}
                       >
-                        {formatValue(tx.amount, tx.currency)}
+                        {maskValue(formatValue(tx.amount, tx.currency), hideValues)}
                       </td>
                       <td className="px-6 py-3 text-slate-600">
                         {tx.description ?? "—"}

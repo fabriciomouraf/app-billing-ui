@@ -6,6 +6,7 @@ import {
   useSummaryMonth,
   useSummaryYear,
 } from "@/hooks/use-api";
+import { useHideValues, maskValue } from "@/contexts/HideValuesContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import { SummaryChart } from "@/components/SummaryChart";
 import { ChartModal } from "@/components/ChartModal";
@@ -122,6 +123,7 @@ function PortfolioSummaryCard({
   year: string;
 }) {
   const [chartOpen, setChartOpen] = useState(false);
+  const { hideValues } = useHideValues();
   const { data: monthly } = useSummaryMonth(portfolio.id, month);
   const { data: yearly } = useSummaryYear(portfolio.id, year);
   const { data: summaries } = useSummaries(portfolio.id, chartOpen);
@@ -168,19 +170,19 @@ function PortfolioSummaryCard({
               <div>
                 <p className="text-slate-500">Início do mês</p>
                 <p className="font-medium text-slate-900">
-                  {formatCurrencyFromReal(values.start_value)}
+                  {maskValue(formatCurrencyFromReal(values.start_value), hideValues)}
                 </p>
               </div>
               <div>
                 <p className="text-slate-500">Fim do mês</p>
                 <p className="font-medium text-slate-900">
-                  {formatCurrencyFromReal(values.end_value)}
+                  {maskValue(formatCurrencyFromReal(values.end_value), hideValues)}
                 </p>
               </div>
               <div>
                 <p className="text-slate-500">Contribuição líquida</p>
                 <p className="font-medium text-slate-900">
-                  {formatCurrencyFromReal(values.net_contribution)}
+                  {maskValue(formatCurrencyFromReal(values.net_contribution), hideValues)}
                 </p>
               </div>
               <div>
@@ -190,7 +192,7 @@ function PortfolioSummaryCard({
                     values.pnl >= 0 ? "text-emerald-600" : "text-red-600"
                   }`}
                 >
-                  {formatCurrencyFromReal(values.pnl)}
+                  {maskValue(formatCurrencyFromReal(values.pnl), hideValues)}
                 </p>
               </div>
             </div>
@@ -205,7 +207,7 @@ function PortfolioSummaryCard({
                   pnlYear >= 0 ? "text-emerald-600" : "text-red-600"
                 }`}
               >
-                {formatCurrencyFromReal(pnlYear)}
+                {maskValue(formatCurrencyFromReal(pnlYear), hideValues)}
               </p>
             </div>
           ) : null}
@@ -220,6 +222,7 @@ function PortfolioSummaryCard({
           <SummaryChart
             summaries={summaries ?? []}
             portfolioName={portfolio.name}
+            hideValues={hideValues}
           />
         </ChartModal>
       ) : null}

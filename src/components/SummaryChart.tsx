@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import type { Summary } from "@/types/api";
 import { formatCurrencyFromReal } from "@/lib/formatters";
+import { maskValue } from "@/contexts/HideValuesContext";
 
 const monthLabels: Record<string, string> = {
   "01": "Jan",
@@ -61,7 +62,11 @@ function buildChartData(summaries: Summary[]): ChartPoint[] {
   });
 }
 
-function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
+function CustomTooltip({
+  active,
+  payload,
+  hideValues = false,
+}: TooltipProps<number, string> & { hideValues?: boolean }) {
   if (!active || !payload?.length) return null;
 
   const point = payload[0]?.payload as ChartPoint | undefined;
@@ -78,7 +83,7 @@ function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
               point.pnl >= 0 ? "text-emerald-600" : "text-red-600"
             }
           >
-            {formatCurrencyFromReal(point.pnl)}
+            {maskValue(formatCurrencyFromReal(point.pnl), hideValues)}
           </span>
         </span>
         <span className="text-slate-600">
@@ -88,11 +93,11 @@ function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
               point.pnlAcumulado >= 0 ? "text-emerald-600" : "text-red-600"
             }
           >
-            {formatCurrencyFromReal(point.pnlAcumulado)}
+            {maskValue(formatCurrencyFromReal(point.pnlAcumulado), hideValues)}
           </span>
         </span>
         <span className="text-slate-600">
-          Valor fim mês: {formatCurrencyFromReal(point.valorFimMes)}
+          Valor fim mês: {maskValue(formatCurrencyFromReal(point.valorFimMes), hideValues)}
         </span>
       </div>
     </div>
@@ -102,9 +107,10 @@ function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
 interface SummaryChartProps {
   summaries: Summary[];
   portfolioName: string;
+  hideValues?: boolean;
 }
 
-export function SummaryChart({ summaries }: SummaryChartProps) {
+export function SummaryChart({ summaries, hideValues = false }: SummaryChartProps) {
   const data = buildChartData(summaries);
 
   if (data.length === 0) {
@@ -114,6 +120,9 @@ export function SummaryChart({ summaries }: SummaryChartProps) {
       </p>
     );
   }
+
+  const tickFormatter = (v: number) =>
+    hideValues ? "•••" : `${(v / 1000).toFixed(0)}k`;
 
   return (
     <ResponsiveContainer width="100%" height={360}>
@@ -128,7 +137,7 @@ export function SummaryChart({ summaries }: SummaryChartProps) {
         <YAxis
           yAxisId="pnl"
           orientation="left"
-          tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+          tickFormatter={tickFormatter}
           tick={{ fontSize: 11 }}
           tickLine={false}
           axisLine={{ stroke: "#94a3b8" }}
@@ -136,12 +145,12 @@ export function SummaryChart({ summaries }: SummaryChartProps) {
         <YAxis
           yAxisId="valor"
           orientation="right"
-          tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+          tickFormatter={tickFormatter}
           tick={{ fontSize: 11 }}
           tickLine={false}
           axisLine={{ stroke: "#94a3b8" }}
         />
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip content={<CustomTooltip hideValues={hideValues} />} />
         <Legend />
         <Bar
           yAxisId="pnl"

@@ -12,6 +12,7 @@ import {
   Input,
   Select,
 } from "@/components/ui";
+import { useHideValues, maskValue } from "@/contexts/HideValuesContext";
 import { formatDate } from "@/lib/formatters";
 import type { Currency, FxRateSource } from "@/types/api";
 
@@ -34,6 +35,7 @@ export function FxRates() {
   const [rate, setRate] = useState("");
   const [source, setSource] = useState<FxRateSource>("MANUAL");
 
+  const { hideValues } = useHideValues();
   const { data: fxRates = [], isLoading } = useAllFxRates();
   const createFxRate = useCreateFxRate({
     onSuccess: () => {
@@ -172,7 +174,7 @@ export function FxRates() {
                         {fx.from_currency} → {fx.to_currency}
                       </td>
                       <td className="px-6 py-3 text-right font-medium text-slate-900">
-                        {fx.rate.toFixed(4)}
+                        {maskValue(fx.rate.toFixed(4), hideValues)}
                       </td>
                       <td className="px-6 py-3 text-slate-600">
                         {fx.source === "MANUAL" ? "Manual" : "API"}

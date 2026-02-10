@@ -19,6 +19,7 @@ import {
   Input,
   Select,
 } from "@/components/ui";
+import { useHideValues, maskValue } from "@/contexts/HideValuesContext";
 import { formatCurrencyBRL, formatCurrencyUSD, formatDate } from "@/lib/formatters";
 import type { TransactionType, Currency } from "@/types/api";
 
@@ -142,6 +143,7 @@ export function BucketDetail() {
     );
   }
 
+  const { hideValues } = useHideValues();
   const formatFn =
     bucket.reference_currency === "BRL" ? formatCurrencyBRL : formatCurrencyUSD;
   const txList = transactions?.filter((t) => t.bucket_id === bucketId) ?? [];
@@ -174,13 +176,13 @@ export function BucketDetail() {
             <div>
               <p className="text-sm text-slate-500">Valor atual</p>
               <p className="text-xl font-semibold text-slate-900">
-                {formatFn(position.current_value)}
+                {maskValue(formatFn(position.current_value), hideValues)}
               </p>
             </div>
             <div>
               <p className="text-sm text-slate-500">Valor investido (BRL)</p>
               <p className="text-xl font-semibold text-slate-900">
-                {formatCurrencyBRL(position.invested_value_brl)}
+                {maskValue(formatCurrencyBRL(position.invested_value_brl), hideValues)}
               </p>
             </div>
           </CardContent>
@@ -282,7 +284,7 @@ export function BucketDetail() {
                             : snap.type}
                     </td>
                     <td className="px-6 py-3 text-right font-medium text-slate-900">
-                      {formatFn(snap.total_value)}
+                      {maskValue(formatFn(snap.total_value), hideValues)}
                     </td>
                   </tr>
                 ))}
@@ -343,7 +345,9 @@ export function BucketDetail() {
                       { value: "", label: fxRatesLoading ? "Carregando..." : "Selecione a taxa" },
                       ...fxRates.map((fx) => ({
                         value: fx.id,
-                        label: `${formatDate(fx.date)} — 1 USD = ${fx.rate.toFixed(4)} BRL`,
+                        label: hideValues
+                          ? `${formatDate(fx.date)} — 1 USD = •••• BRL`
+                          : `${formatDate(fx.date)} — 1 USD = ${fx.rate.toFixed(4)} BRL`,
                       })),
                     ]}
                     disabled={createTx.isPending || fxRatesLoading}
@@ -432,7 +436,7 @@ export function BucketDetail() {
                           : "text-slate-900"
                       }`}
                     >
-                      {formatFn(tx.amount)}
+                      {maskValue(formatFn(tx.amount), hideValues)}
                     </td>
                     <td className="px-6 py-3 text-slate-600">
                       {tx.description ?? "—"}
