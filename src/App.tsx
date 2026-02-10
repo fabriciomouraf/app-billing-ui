@@ -7,6 +7,7 @@ import { Dashboard } from "@/pages/Dashboard";
 import { Portfolios } from "@/pages/Portfolios";
 import { PortfolioDetail } from "@/pages/PortfolioDetail";
 import { BucketDetail } from "@/pages/BucketDetail";
+import { FxRates } from "@/pages/FxRates";
 import { Users } from "@/pages/Users";
 
 const queryClient = new QueryClient({
@@ -46,6 +47,7 @@ function ProtectedRoutes() {
           path="portfolios/:portfolioId/buckets/:bucketId"
           element={<BucketDetail />}
         />
+        <Route path="cotacoes" element={<FxRates />} />
         <Route path="users" element={<Users />} />
       </Route>
     </Routes>

@@ -226,6 +226,13 @@ export function useFxRates(params: {
   });
 }
 
+export function useAllFxRates() {
+  return useQuery({
+    queryKey: ["fx-rates", "all"],
+    queryFn: () => api.getFxRates().then((r) => r.fxRates),
+  });
+}
+
 export function useCreateFxRate(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof api.createFxRate>>,

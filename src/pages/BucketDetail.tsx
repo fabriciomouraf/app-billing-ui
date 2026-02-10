@@ -8,7 +8,6 @@ import {
   useCreateSnapshot,
   useTransactions,
   useCreateTransaction,
-  useCreateFxRate,
   useFxRates,
 } from "@/hooks/use-api";
 import {
@@ -21,16 +20,11 @@ import {
   Select,
 } from "@/components/ui";
 import { formatCurrencyBRL, formatCurrencyUSD, formatDate } from "@/lib/formatters";
-import type { TransactionType, Currency, FxRateSource } from "@/types/api";
+import type { TransactionType, Currency } from "@/types/api";
 
 const transactionTypeOptions: { value: TransactionType; label: string }[] = [
   { value: "CONTRIBUTION", label: "Contribuição" },
   { value: "WITHDRAWAL", label: "Retirada" },
-];
-
-const fxRateSourceOptions: { value: FxRateSource; label: string }[] = [
-  { value: "MANUAL", label: "Manual" },
-  { value: "API", label: "API" },
 ];
 
 export function BucketDetail() {
@@ -46,12 +40,6 @@ export function BucketDetail() {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [selectedFxRateId, setSelectedFxRateId] = useState("");
-  const [showFxRateForm, setShowFxRateForm] = useState(false);
-  const [fxRateDate, setFxRateDate] = useState(() =>
-    new Date().toISOString().slice(0, 10)
-  );
-  const [fxRateValue, setFxRateValue] = useState("");
-  const [fxRateSource, setFxRateSource] = useState<FxRateSource>("MANUAL");
   const [showSnapshotForm, setShowSnapshotForm] = useState(false);
   const [snapshotDate, setSnapshotDate] = useState(() =>
     new Date().toISOString().slice(0, 10)
@@ -85,26 +73,6 @@ export function BucketDetail() {
       setSelectedFxRateId("");
     },
   });
-  const createFxRate = useCreateFxRate({
-    onSuccess: (created) => {
-      setSelectedFxRateId(created.id);
-      setShowFxRateForm(false);
-      setFxRateValue("");
-    },
-  });
-
-  const handleSubmitFxRate = (e: React.FormEvent) => {
-    e.preventDefault();
-    const rateNum = parseFloat(fxRateValue.replace(",", "."));
-    if (Number.isNaN(rateNum) || rateNum <= 0) return;
-    createFxRate.mutate({
-      date: fxRateDate,
-      from: "USD",
-      to: "BRL",
-      rate: rateNum,
-      source: fxRateSource,
-    });
-  };
 
   const handleSubmitSnapshot = (e: React.FormEvent) => {
     e.preventDefault();
@@ -366,7 +334,7 @@ export function BucketDetail() {
                 disabled={createTx.isPending}
               />
               {isUsdBucket ? (
-                <>
+                <div className="space-y-2">
                   <Select
                     label="Taxa de câmbio (USD → BRL)"
                     value={selectedFxRateId}
@@ -381,88 +349,13 @@ export function BucketDetail() {
                     disabled={createTx.isPending || fxRatesLoading}
                     required
                   />
-                  {showFxRateForm ? (
-                    <Card className="border-slate-200 bg-slate-50/50">
-                      <CardContent className="pt-4">
-                        <p className="mb-3 text-sm font-medium text-slate-700">
-                          Nova cotação USD → BRL
-                        </p>
-                        <form
-                          onSubmit={handleSubmitFxRate}
-                          className="flex flex-wrap items-end gap-4"
-                        >
-                          <Input
-                            label="Data"
-                            type="date"
-                            value={fxRateDate}
-                            onChange={(e) => setFxRateDate(e.target.value)}
-                            required
-                            disabled={createFxRate.isPending}
-                          />
-                          <Input
-                            label="Taxa (1 USD = ? BRL)"
-                            type="text"
-                            inputMode="decimal"
-                            value={fxRateValue}
-                            onChange={(e) => setFxRateValue(e.target.value)}
-                            placeholder="5,1234"
-                            required
-                            disabled={createFxRate.isPending}
-                          />
-                          <Select
-                            label="Origem"
-                            value={fxRateSource}
-                            onChange={(e) =>
-                              setFxRateSource(e.target.value as FxRateSource)
-                            }
-                            options={fxRateSourceOptions}
-                            disabled={createFxRate.isPending}
-                          />
-                          <div className="flex gap-2">
-                            <Button
-                              type="button"
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => {
-                                setShowFxRateForm(false);
-                                setFxRateValue("");
-                              }}
-                              disabled={createFxRate.isPending}
-                            >
-                              Cancelar
-                            </Button>
-                            <Button
-                              type="submit"
-                              size="sm"
-                              disabled={createFxRate.isPending}
-                            >
-                              {createFxRate.isPending
-                                ? "Salvando..."
-                                : "Cadastrar cotação"}
-                            </Button>
-                          </div>
-                        </form>
-                        {createFxRate.error ? (
-                          <p className="mt-2 text-sm text-red-600">
-                            {createFxRate.error.message}
-                          </p>
-                        ) : null}
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => {
-                        setShowFxRateForm(true);
-                        setFxRateDate(date);
-                      }}
-                    >
-                      Cadastrar nova cotação
-                    </Button>
-                  )}
-                </>
+                  <Link
+                    to="/cotacoes"
+                    className="text-sm text-emerald-600 hover:text-emerald-700"
+                  >
+                    Cadastrar nova cotação
+                  </Link>
+                </div>
               ) : null}
               <Input
                 label="Descrição"
