@@ -149,18 +149,16 @@ export function BucketDetail() {
   const txList = transactions?.filter((t) => t.bucket_id === bucketId) ?? [];
 
   return (
-    <div>
-      <div className="mb-6">
-        <Link
-          to={`/portfolios/${portfolioId}`}
-          className="text-sm text-slate-600 hover:text-slate-900"
-        >
-          ← Voltar ao portfólio
-        </Link>
-      </div>
+    <div className="flex flex-col gap-8">
+      <Link
+        to={`/portfolios/${portfolioId}`}
+        className="text-sm text-slate-600 hover:text-slate-900"
+      >
+        ← Voltar ao portfólio
+      </Link>
 
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">{bucket.name}</h1>
+      <div>
+        <h1 className="text-xl font-semibold text-slate-900">{bucket.name}</h1>
         <p className="text-sm text-slate-500">
           {bucket.type} · {bucket.reference_currency}
         </p>
@@ -168,7 +166,7 @@ export function BucketDetail() {
 
       {/* Position */}
       {position ? (
-        <Card className="mb-8">
+        <Card>
           <CardHeader>
             <CardTitle>Posição atual</CardTitle>
           </CardHeader>
@@ -190,19 +188,20 @@ export function BucketDetail() {
       ) : null}
 
       {/* Snapshots */}
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-800">Snapshots</h2>
-        <Button
-          onClick={() => setShowSnapshotForm((v) => !v)}
-          variant="primary"
-          size="sm"
-        >
-          {showSnapshotForm ? "Cancelar" : "Novo snapshot"}
-        </Button>
-      </div>
+      <section className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-slate-800">Snapshots</h2>
+          <Button
+            onClick={() => setShowSnapshotForm((v) => !v)}
+            variant="primary"
+            size="sm"
+          >
+            {showSnapshotForm ? "Cancelar" : "Novo snapshot"}
+          </Button>
+        </div>
 
-      {showSnapshotForm ? (
-        <Card className="mb-6">
+        {showSnapshotForm ? (
+        <Card>
           <CardContent>
             <form
               onSubmit={handleSubmitSnapshot}
@@ -243,13 +242,13 @@ export function BucketDetail() {
       ) : null}
 
       {snapshots.length === 0 ? (
-        <Card className="mb-8">
+        <Card>
           <CardContent>
             <p className="text-slate-600">Nenhum snapshot neste bucket.</p>
           </CardContent>
         </Card>
       ) : (
-        <Card className="mb-8">
+        <Card>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -293,21 +292,23 @@ export function BucketDetail() {
           </div>
         </Card>
       )}
+      </section>
 
       {/* New transaction */}
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-800">Transações</h2>
-        <Button
-          onClick={() => setShowTxForm((v) => !v)}
-          variant="primary"
-          size="sm"
-        >
-          {showTxForm ? "Cancelar" : "Nova transação"}
-        </Button>
-      </div>
+      <section className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-slate-800">Transações</h2>
+          <Button
+            onClick={() => setShowTxForm((v) => !v)}
+            variant="primary"
+            size="sm"
+          >
+            {showTxForm ? "Cancelar" : "Nova transação"}
+          </Button>
+        </div>
 
-      {showTxForm ? (
-        <Card className="mb-8">
+        {showTxForm ? (
+        <Card>
           <CardContent>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md">
               <Input
@@ -448,6 +449,7 @@ export function BucketDetail() {
           </div>
         </Card>
       )}
+      </section>
     </div>
   );
 }

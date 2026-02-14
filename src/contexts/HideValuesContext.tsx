@@ -12,9 +12,10 @@ const STORAGE_KEY = "billing-ui-hide-values";
 function getStored(): boolean {
   try {
     const v = localStorage.getItem(STORAGE_KEY);
-    return v === "true";
+    // default: oculto (true). Só mostra valores se estiver explicitamente "false"
+    return v !== "false";
   } catch {
-    return false;
+    return true;
   }
 }
 

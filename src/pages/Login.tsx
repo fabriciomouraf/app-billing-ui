@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { Button, Input } from "@/components/ui";
 import { useAuth } from "@/contexts/AuthContext";
 
 export function Login() {
@@ -25,10 +24,10 @@ export function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
-      <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-emerald-700">Billing</h1>
-          <p className="mt-1 text-sm text-slate-600">
+      <div className="flex w-full max-w-sm flex-col gap-8 rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="flex flex-col gap-1 text-center">
+          <h1 className="text-xl font-semibold text-emerald-700">Billing</h1>
+          <p className="text-sm text-slate-600">
             Entre com seu email e senha
           </p>
         </div>
@@ -57,7 +56,7 @@ export function Login() {
               {error}
             </p>
           ) : null}
-          <Button type="submit" disabled={isSubmitting} className="mt-2">
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Entrando..." : "Entrar"}
           </Button>
         </form>

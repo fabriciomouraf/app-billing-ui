@@ -59,9 +59,9 @@ export function Dashboard() {
   const list = portfolios ?? [];
 
   return (
-    <div>
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-semibold text-slate-900">Dashboard</h1>
         <div className="flex gap-4">
           <label className="flex items-center gap-2">
             <span className="text-sm text-slate-600">Mês:</span>
@@ -124,12 +124,13 @@ function PortfolioSummaryCard({
 }) {
   const [chartOpen, setChartOpen] = useState(false);
   const { hideValues } = useHideValues();
-  const { data: monthly } = useSummaryMonth(portfolio.id, month);
-  const { data: yearly } = useSummaryYear(portfolio.id, year);
+  const { data: monthly, isLoading: monthlyLoading } = useSummaryMonth(portfolio.id, month);
+  const { data: yearly, isLoading: yearlyLoading } = useSummaryYear(portfolio.id, year);
   const { data: summaries } = useSummaries(portfolio.id, chartOpen);
 
   const values = monthly?.values_brl_real;
   const pnlYear = yearly?.pnl_accumulated_brl_real;
+  const summaryLoading = monthlyLoading || yearlyLoading;
 
   return (
     <>
@@ -165,7 +166,30 @@ function PortfolioSummaryCard({
             </button>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-          {values ? (
+          {summaryLoading ? (
+            <div className="grid grid-cols-2 gap-3 text-sm animate-pulse">
+              <div>
+                <div className="h-4 w-24 rounded bg-slate-200" />
+                <div className="mt-1 h-6 w-28 rounded bg-slate-200" />
+              </div>
+              <div>
+                <div className="h-4 w-24 rounded bg-slate-200" />
+                <div className="mt-1 h-6 w-28 rounded bg-slate-200" />
+              </div>
+              <div>
+                <div className="h-4 w-28 rounded bg-slate-200" />
+                <div className="mt-1 h-6 w-24 rounded bg-slate-200" />
+              </div>
+              <div>
+                <div className="h-4 w-20 rounded bg-slate-200" />
+                <div className="mt-1 h-6 w-24 rounded bg-slate-200" />
+              </div>
+              <div className="col-span-2 border-t border-slate-100 pt-3">
+                <div className="h-3 w-32 rounded bg-slate-200" />
+                <div className="mt-2 h-6 w-28 rounded bg-slate-200" />
+              </div>
+            </div>
+          ) : values ? (
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <p className="text-slate-500">Início do mês</p>
@@ -199,7 +223,7 @@ function PortfolioSummaryCard({
           ) : (
             <p className="text-sm text-slate-500">Sem dados do mês</p>
           )}
-          {pnlYear !== undefined ? (
+          {!summaryLoading && pnlYear !== undefined ? (
             <div className="border-t border-slate-100 pt-3">
               <p className="text-xs text-slate-500">PnL acumulado no ano</p>
               <p

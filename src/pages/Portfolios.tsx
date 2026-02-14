@@ -62,16 +62,16 @@ export function Portfolios() {
   const list = portfolios ?? [];
 
   return (
-    <div>
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Portfólios</h1>
+    <div className="flex flex-col gap-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-semibold text-slate-900">Portfólios</h1>
         <Button onClick={() => setShowForm((v) => !v)} variant="primary">
           {showForm ? "Cancelar" : "Novo portfólio"}
         </Button>
       </div>
 
       {showForm ? (
-        <Card className="mb-8">
+        <Card>
           <CardHeader>
             <CardTitle>Novo portfólio</CardTitle>
           </CardHeader>

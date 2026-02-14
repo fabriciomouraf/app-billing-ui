@@ -58,10 +58,10 @@ export function FxRates() {
   };
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Cotações</h1>
-        <p className="mt-1 text-sm text-slate-600">
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-xl font-semibold text-slate-900">Cotações</h1>
+        <p className="text-sm text-slate-600">
           Cadastre e consulte as taxas de câmbio usadas nas transações e resumos.
         </p>
       </div>
@@ -126,7 +126,7 @@ export function FxRates() {
             </Button>
           </form>
           {createFxRate.error ? (
-            <p className="mt-2 text-sm text-red-600">
+            <p className="text-sm text-red-600">
               {createFxRate.error.message}
             </p>
           ) : null}

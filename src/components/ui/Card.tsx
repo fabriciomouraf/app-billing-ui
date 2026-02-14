@@ -35,7 +35,7 @@ export function CardTitle({
 }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={`text-lg font-semibold text-slate-900 ${className}`.trim()}
+      className={`font-semibold text-slate-900 ${className}`.trim()}
       {...props}
     >
       {children}

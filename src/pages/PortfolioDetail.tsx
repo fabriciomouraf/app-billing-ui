@@ -96,27 +96,25 @@ export function PortfolioDetail() {
   const txList = transactions ?? [];
 
   return (
-    <div>
-      <div className="mb-6">
-        <Link
-          to="/portfolios"
-          className="text-sm text-slate-600 hover:text-slate-900"
-        >
-          ← Voltar
-        </Link>
-      </div>
+    <div className="flex flex-col gap-8">
+      <Link
+        to="/portfolios"
+        className="text-sm text-slate-600 hover:text-slate-900"
+      >
+        ← Voltar
+      </Link>
 
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">{portfolio.name}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-semibold text-slate-900">{portfolio.name}</h1>
         <p className="text-sm text-slate-500">
           Moeda base: {portfolio.base_currency}
         </p>
       </div>
 
       {/* Buckets */}
-      <section className="mb-10">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-800">Buckets</h2>
+      <section className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-slate-800">Buckets</h2>
           <Button
             onClick={() => setShowBucketForm((v) => !v)}
             variant="secondary"
@@ -127,7 +125,7 @@ export function PortfolioDetail() {
         </div>
 
         {showBucketForm ? (
-          <Card className="mb-6">
+          <Card>
             <CardContent>
               <form onSubmit={handleCreateBucket} className="flex flex-col gap-4 max-w-md">
                 <Input
@@ -185,8 +183,8 @@ export function PortfolioDetail() {
       </section>
 
       {/* Transactions */}
-      <section>
-        <h2 className="mb-4 text-lg font-semibold text-slate-800">
+      <section className="flex flex-col gap-4">
+        <h2 className="font-semibold text-slate-800">
           Transações recentes
         </h2>
         {txList.length === 0 ? (
