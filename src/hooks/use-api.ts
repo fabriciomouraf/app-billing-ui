@@ -85,14 +85,14 @@ export function useCreateSnapshot(
   return useMutation({
     mutationFn: (body: Parameters<typeof api.createSnapshot>[2]) =>
       api.createSnapshot(portfolioId, bucketId, body),
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, onMutateResult, context) => {
       qc.invalidateQueries({
         queryKey: ["portfolios", portfolioId, "buckets", bucketId, "snapshots"],
       });
       qc.invalidateQueries({
         queryKey: ["portfolios", portfolioId, "buckets", bucketId, "position"],
       });
-      userOnSuccess?.(data, variables, context);
+      userOnSuccess?.(data, variables, onMutateResult, context);
     },
     ...restOptions,
   });
