@@ -20,7 +20,7 @@ import {
   Select,
 } from "@/components/ui";
 import { useHideValues, maskValue } from "@/contexts/HideValuesContext";
-import { formatCurrencyBRL, formatCurrencyUSD, formatDate } from "@/lib/formatters";
+import { formatCurrencyBRL, formatCurrencyUSD, formatDate, parseCurrencyInput } from "@/lib/formatters";
 import type { TransactionType, Currency } from "@/types/api";
 
 const transactionTypeOptions: { value: TransactionType; label: string }[] = [
@@ -78,9 +78,7 @@ export function BucketDetail() {
   const handleSubmitSnapshot = (e: React.FormEvent) => {
     e.preventDefault();
     if (!bucket || !snapshotTotalValue.trim()) return;
-    const valueNum = Math.round(
-      parseFloat(snapshotTotalValue.replace(",", ".")) * 100
-    );
+    const valueNum = Math.round(parseCurrencyInput(snapshotTotalValue) * 100);
     if (Number.isNaN(valueNum) || valueNum < 0) return;
     createSnapshot.mutate({
       date: snapshotDate,
@@ -92,7 +90,7 @@ export function BucketDetail() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!portfolioId || !bucket || !amount.trim()) return;
-    const amountNum = Math.round(parseFloat(amount.replace(",", ".")) * 100);
+    const amountNum = Math.round(parseCurrencyInput(amount) * 100);
     if (Number.isNaN(amountNum) || amountNum <= 0) return;
 
     const currency = bucket.reference_currency as Currency;

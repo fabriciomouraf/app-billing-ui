@@ -58,3 +58,12 @@ export function formatNumber(value: number) {
 export function formatCurrencyFromReal(value: number) {
   return currencyBRL.format(value);
 }
+
+/**
+ * Converte string de valor no formato pt-BR (ex: "6.788,42") em número.
+ * Aceita ponto como separador de milhares e vírgula como decimal.
+ */
+export function parseCurrencyInput(value: string): number {
+  const normalized = value.trim().replace(/\./g, "").replace(",", ".");
+  return parseFloat(normalized) || 0;
+}
