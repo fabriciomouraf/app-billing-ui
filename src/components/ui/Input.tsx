@@ -1,4 +1,6 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+import { Label } from "./Label";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -6,22 +8,24 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className = "", id, ...props }, ref) => {
+  ({ label, error, className, id, ...props }, ref) => {
     const inputId = id ?? label?.toLowerCase().replace(/\s/g, "-");
-    const base =
-      "w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500";
 
     return (
       <div className="flex flex-col gap-1">
         {label ? (
-          <label htmlFor={inputId} className="text-sm font-medium text-slate-700">
+          <Label htmlFor={inputId}>
             {label}
-          </label>
+          </Label>
         ) : null}
         <input
           ref={ref}
           id={inputId}
-          className={`${base} ${error ? "border-red-500" : ""} ${className}`.trim()}
+          className={cn(
+            "flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-950 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-50",
+            error && "border-red-500 focus-visible:ring-red-500",
+            className
+          )}
           aria-invalid={!!error}
           aria-describedby={error ? `${inputId}-error` : undefined}
           {...props}

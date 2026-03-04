@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useHideValues } from "@/contexts/HideValuesContext";
 import { Button } from "@/components/ui";
@@ -38,21 +39,21 @@ function NavContent({
             key={item.to}
             to={item.to}
             onClick={onNavClick}
-            className={`text-sm font-medium transition-colors ${
+            className={`rounded-full px-4 py-2 text-sm font-semibold transition-all ${
               isActive
-                ? "text-emerald-600"
-                : "text-slate-600 hover:text-slate-900"
+                ? "bg-white/70 text-slate-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_10px_24px_rgba(255,255,255,0.18)]"
+                : "text-slate-700 hover:bg-white/45 hover:text-slate-950"
             }`}
           >
             {item.label}
           </Link>
         );
       })}
-      <div className="flex items-center gap-3 border-l border-slate-200 pl-6 md:border-l">
+      <div className="ml-2 flex items-center gap-2 border-l border-white/35 pl-4">
         <button
           type="button"
           onClick={toggleHideValues}
-          className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-white/55 bg-white/45 text-slate-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] transition hover:bg-white/70 hover:text-slate-900"
           title={hideValues ? "Mostrar valores" : "Ocultar valores"}
           aria-label={hideValues ? "Mostrar valores" : "Ocultar valores"}
         >
@@ -90,8 +91,20 @@ function NavContent({
             </svg>
           )}
         </button>
-        <span className="text-sm text-slate-600">{user?.name}</span>
-        <Button variant="ghost" size="sm" onClick={() => { onNavClick?.(); logout(); }}>
+        <div className="hidden min-w-0 px-2 lg:block">
+          <span className="block truncate text-sm font-medium text-slate-700">
+            {user?.name}
+          </span>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-11 rounded-full border border-white/60 bg-white/50 px-5 text-slate-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] hover:bg-white/75"
+          onClick={() => {
+            onNavClick?.();
+            logout();
+          }}
+        >
           Sair
         </Button>
       </div>
@@ -106,18 +119,22 @@ export function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white shadow-sm">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#eef3f8_0%,#f8fafc_22%,#f8fafc_100%)]">
+      <header className="sticky top-0 z-20 px-3 pt-3 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="relative overflow-hidden rounded-[2rem] border border-white/65 bg-white/38 shadow-[0_24px_70px_rgba(148,163,184,0.18)] backdrop-blur-3xl">
+            <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-white/90" />
+            <div className="pointer-events-none absolute -left-12 top-1/2 h-24 w-24 -translate-y-1/2 rounded-full bg-white/55 blur-2xl" />
+            <div className="mx-auto flex h-20 items-center justify-between px-5 sm:px-7">
           <Link
             to="/"
-            className="text-xl font-bold text-emerald-700 hover:text-emerald-800"
+            className="text-2xl font-bold tracking-[-0.05em] text-slate-900 transition hover:text-slate-700"
           >
             Billing
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex md:items-center md:gap-6">
+          <nav className="hidden md:flex md:items-center md:gap-1">
             <NavContent
               location={location}
               hideValues={hideValues}
@@ -130,15 +147,15 @@ export function Layout() {
           {/* Hamburger button (mobile) - só ícone de abrir; o X fica dentro do painel */}
           <button
             type="button"
-            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 md:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/60 bg-white/50 text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] transition hover:bg-white/75 hover:text-slate-950 md:hidden"
             onClick={() => setMobileMenuOpen(true)}
             aria-label="Abrir menu"
             aria-expanded={mobileMenuOpen}
           >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+            <Menu className="h-5 w-5" />
           </button>
+        </div>
+          </div>
         </div>
       </header>
 
@@ -146,25 +163,24 @@ export function Layout() {
       {mobileMenuOpen && (
         <>
           <div
-            className="fixed inset-0 z-30 bg-slate-900/50 md:hidden"
+            className="fixed inset-0 z-30 bg-slate-900/18 backdrop-blur-sm md:hidden"
             aria-hidden="true"
             onClick={() => setMobileMenuOpen(false)}
           />
           <aside
-            className="fixed right-0 top-0 z-40 flex h-full min-h-screen w-72 flex-col gap-6 overflow-y-auto border-l border-slate-200 bg-white px-6 pt-4 pb-6 shadow-xl md:hidden"
+            className="fixed right-3 top-3 z-40 flex h-[calc(100vh-1.5rem)] w-[min(22rem,calc(100vw-1.5rem))] flex-col gap-6 overflow-y-auto rounded-[2rem] border border-white/65 bg-white/42 px-6 pb-6 pt-5 shadow-[0_24px_80px_rgba(15,23,42,0.18)] backdrop-blur-3xl md:hidden"
             role="dialog"
             aria-label="Menu de navegação"
           >
+            <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-white/90" />
             <div className="flex shrink-0 items-center justify-end">
               <button
                 type="button"
-                className="-mr-2 rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/60 bg-white/50 text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] transition hover:bg-white/75 hover:text-slate-950"
                 onClick={() => setMobileMenuOpen(false)}
                 aria-label="Fechar menu"
               >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X className="h-5 w-5" />
               </button>
             </div>
             <nav className="flex flex-col gap-4">
@@ -178,10 +194,10 @@ export function Layout() {
                     key={item.to}
                     to={item.to}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`rounded-lg px-3 py-2 text-base font-medium transition-colors ${
+                    className={`rounded-2xl px-4 py-3 text-base font-semibold transition-all ${
                       isActive
-                        ? "bg-emerald-50 text-emerald-600"
-                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                        ? "border border-white/65 bg-white/70 text-slate-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_12px_28px_rgba(255,255,255,0.16)]"
+                        : "text-slate-700 hover:bg-white/50 hover:text-slate-950"
                     }`}
                   >
                     {item.label}
@@ -189,12 +205,12 @@ export function Layout() {
                 );
               })}
             </nav>
-            <div className="mt-auto flex flex-col gap-3 border-t border-slate-200 pt-4">
+            <div className="mt-auto flex flex-col gap-3 border-t border-white/40 pt-5">
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={toggleHideValues}
-                  className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/55 bg-white/45 text-slate-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] transition hover:bg-white/70 hover:text-slate-900"
                   title={hideValues ? "Mostrar valores" : "Ocultar valores"}
                   aria-label={hideValues ? "Mostrar valores" : "Ocultar valores"}
                 >
@@ -212,9 +228,17 @@ export function Layout() {
                     </svg>
                   )}
                 </button>
-                <span className="text-sm text-slate-600">{user?.name}</span>
+                <span className="text-sm font-medium text-slate-700">{user?.name}</span>
               </div>
-              <Button variant="ghost" size="sm" className="justify-start" onClick={() => { setMobileMenuOpen(false); logout(); }}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-11 justify-start rounded-full border border-white/60 bg-white/50 px-5 text-slate-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] hover:bg-white/75"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  logout();
+                }}
+              >
                 Sair
               </Button>
             </div>
