@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import {
+  BadgeDollarSign,
+  BriefcaseBusiness,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  X,
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useHideValues } from "@/contexts/HideValuesContext";
 import { Button } from "@/components/ui";
@@ -10,6 +17,12 @@ const navItems = [
   { to: "/portfolios", label: "Portfólios" },
   { to: "/cotacoes", label: "Cotações" },
   { to: "/users", label: "Usuários" },
+];
+
+const quickNavItems = [
+  { to: "/", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/portfolios", label: "Portfólios", icon: BriefcaseBusiness },
+  { to: "/cotacoes", label: "Cotações", icon: BadgeDollarSign },
 ];
 
 function NavContent({
@@ -246,9 +259,59 @@ export function Layout() {
         </>
       )}
 
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-6xl px-4 pb-28 pt-8 sm:px-6 lg:px-8">
         <Outlet />
       </main>
+
+      <footer className="pointer-events-none fixed inset-x-0 bottom-0 z-20 px-3 pb-3 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <nav
+            aria-label="Atalhos rápidos"
+            className="pointer-events-auto mx-auto w-fit"
+          >
+            <div className="relative overflow-hidden rounded-[1.6rem] border border-white/75 bg-white/62 p-2 shadow-[0_24px_60px_rgba(15,23,42,0.14)] backdrop-blur-3xl">
+              <div className="pointer-events-none absolute inset-x-4 top-0 h-px bg-white/95" />
+              <div className="pointer-events-none absolute -right-8 bottom-0 h-16 w-16 rounded-full bg-white/55 blur-2xl" />
+              <div className="relative flex items-center gap-2">
+                {quickNavItems.map((item) => {
+                  const isActive = location.pathname.startsWith(item.to);
+                  const dashboardIsActive =
+                    item.to === "/" && location.pathname === "/";
+                  const resolvedIsActive =
+                    item.to === "/" ? dashboardIsActive : isActive;
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      aria-label={item.label}
+                      title={item.label}
+                      className={`inline-flex h-12 w-12 items-center justify-center rounded-[1.1rem] border text-sm font-semibold transition ${
+                        resolvedIsActive
+                          ? "border-white/85 bg-white/88 text-slate-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.98),0_12px_24px_rgba(15,23,42,0.08)]"
+                          : "border-transparent bg-white/28 text-slate-700 hover:border-white/60 hover:bg-white/62 hover:text-slate-950"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span className="sr-only">{item.label}</span>
+                    </Link>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={logout}
+                  aria-label="Sair"
+                  title="Sair"
+                  className="inline-flex h-12 w-12 items-center justify-center rounded-[1.1rem] border border-transparent bg-white/28 text-sm font-semibold text-slate-700 transition hover:border-white/60 hover:bg-white/62 hover:text-slate-950"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span className="sr-only">Sair</span>
+                </button>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </footer>
     </div>
   );
 }

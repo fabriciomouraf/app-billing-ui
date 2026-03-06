@@ -182,7 +182,7 @@ export function PortfolioDetail() {
             onClick={() => setShowBucketForm((v) => !v)}
             variant="secondary"
             size="sm"
-            className="h-11 rounded-full border border-white/75 bg-white/72 px-5 text-slate-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] hover:bg-white/84"
+            className="h-12 rounded-full border border-blue-200/85 bg-blue-600 px-6 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.34),0_18px_35px_rgba(37,99,235,0.3)] hover:bg-blue-700"
           >
             <Plus className="h-4 w-4" />
             {showBucketForm ? "Cancelar" : "Novo bucket"}
