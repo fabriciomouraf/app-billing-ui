@@ -5,6 +5,7 @@ import {
   type UseMutationOptions,
 } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import type { FxRate } from "@/types/api";
 
 export function useUsers() {
   return useQuery({
@@ -188,14 +189,29 @@ export function useCreateTransaction(
   >
 ) {
   const qc = useQueryClient();
+  const { onSuccess: userOnSuccess, ...restOptions } = options ?? {};
+
   return useMutation({
     mutationFn: (body: Parameters<typeof api.createTransaction>[1]) =>
       api.createTransaction(portfolioId, body),
-    onSuccess: () =>
+    onSuccess: (data, variables, onMutateResult, context) => {
       qc.invalidateQueries({
         queryKey: ["portfolios", portfolioId, "transactions"],
-      }),
-    ...options,
+      });
+      qc.invalidateQueries({
+        queryKey: ["portfolios", portfolioId, "buckets", variables.bucketId, "position"],
+      });
+      qc.invalidateQueries({
+        queryKey: ["portfolios"],
+        predicate: (query) =>
+          Array.isArray(query.queryKey) &&
+          query.queryKey[0] === "portfolios" &&
+          query.queryKey[1] === portfolioId &&
+          query.queryKey.includes("summaries"),
+      });
+      userOnSuccess?.(data, variables, onMutateResult, context);
+    },
+    ...restOptions,
   });
 }
 
@@ -239,14 +255,61 @@ export function useCreateFxRate(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof api.createFxRate>>,
     Error,
-    Parameters<typeof api.createFxRate>[0]
+    Parameters<typeof api.createFxRate>[0],
+    { previousAll?: FxRate[]; userOnMutateResult?: unknown }
   >
 ) {
   const qc = useQueryClient();
+  const {
+    onMutate: userOnMutate,
+    onError: userOnError,
+    onSuccess: userOnSuccess,
+    onSettled: userOnSettled,
+    ...restOptions
+  } = options ?? {};
+
   return useMutation({
     mutationFn: api.createFxRate,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["fx-rates"] }),
-    ...options,
+    onMutate: async (variables, context) => {
+      await qc.cancelQueries({ queryKey: ["fx-rates"] });
+
+      const previousAll = qc.getQueryData<FxRate[]>(["fx-rates", "all"]);
+      const optimisticRate: FxRate = {
+        id: `optimistic-${Date.now()}`,
+        date: variables.date,
+        from_currency: variables.from,
+        to_currency: variables.to,
+        rate: variables.rate,
+        source: variables.source,
+      };
+
+      qc.setQueryData<FxRate[]>(["fx-rates", "all"], (current) => [
+        optimisticRate,
+        ...(current ?? []),
+      ]);
+
+      const userOnMutateResult = await userOnMutate?.(variables, context);
+      return { previousAll, userOnMutateResult };
+    },
+    onError: (error, variables, onMutateResult, context) => {
+      if (onMutateResult?.previousAll) {
+        qc.setQueryData(["fx-rates", "all"], onMutateResult.previousAll);
+      }
+      userOnError?.(error, variables, onMutateResult, context);
+    },
+    onSuccess: (data, variables, onMutateResult, context) => {
+      qc.invalidateQueries({ queryKey: ["fx-rates"] });
+      qc.invalidateQueries({
+        queryKey: ["portfolios"],
+        predicate: (query) =>
+          Array.isArray(query.queryKey) && query.queryKey.includes("summaries"),
+      });
+      userOnSuccess?.(data, variables, onMutateResult, context);
+    },
+    onSettled: (data, error, variables, onMutateResult, context) => {
+      userOnSettled?.(data, error, variables, onMutateResult, context);
+    },
+    ...restOptions,
   });
 }
 

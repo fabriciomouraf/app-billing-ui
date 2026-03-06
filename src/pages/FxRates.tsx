@@ -56,13 +56,12 @@ export function FxRates() {
     });
   };
 
-  const latestRate = fxRates.reduce<(typeof fxRates)[number] | undefined>(
-    (latest, current) => {
-      if (!latest) return current;
-      return new Date(current.date) > new Date(latest.date) ? current : latest;
-    },
-    undefined
-  );
+  const sortedFxRates = [...fxRates].sort((a, b) => {
+    const byDate = b.date.localeCompare(a.date);
+    if (byDate !== 0) return byDate;
+    return b.id.localeCompare(a.id);
+  });
+  const latestRate = sortedFxRates[0];
 
   return (
     <div className="flex flex-col gap-8">
@@ -93,7 +92,7 @@ export function FxRates() {
             <MetricCard
               icon={TrendingUp}
               label="Registros"
-              value={String(fxRates.length)}
+              value={String(sortedFxRates.length)}
             />
             <MetricCard
               icon={CalendarClock}
@@ -216,7 +215,7 @@ export function FxRates() {
                   />
                 ))}
               </div>
-            ) : fxRates.length === 0 ? (
+            ) : sortedFxRates.length === 0 ? (
               <div className="rounded-[1.5rem] border border-white/70 bg-white/62 p-6 text-sm text-slate-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.94)]">
                 Nenhuma cotação cadastrada.
               </div>
@@ -240,7 +239,7 @@ export function FxRates() {
                     </tr>
                   </thead>
                   <tbody>
-                    {fxRates.map((fx) => (
+                    {sortedFxRates.map((fx) => (
                       <tr
                         key={fx.id}
                         className="border-b border-white/55 last:border-b-0 hover:bg-white/42"

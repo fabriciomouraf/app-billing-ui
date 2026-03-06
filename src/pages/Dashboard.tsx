@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import {
   usePortfolios,
   useSummaries,
@@ -16,10 +17,6 @@ import { formatCurrencyFromReal } from "@/lib/formatters";
 function getCurrentMonth() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-}
-
-function getCurrentYear() {
-  return String(new Date().getFullYear());
 }
 
 const monthFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -49,9 +46,19 @@ function formatMonthLabel(value: string) {
 
 export function Dashboard() {
   const [month, setMonth] = useState(getCurrentMonth);
-  const [year, setYear] = useState(getCurrentYear);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: portfolios, isLoading, error } = usePortfolios();
+
+  async function handleRefresh() {
+    setIsRefreshing(true);
+    try {
+      await queryClient.refetchQueries({ queryKey: ["portfolios"] });
+    } finally {
+      setIsRefreshing(false);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -89,20 +96,7 @@ export function Dashboard() {
       <div className="relative z-20 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-xl font-semibold text-slate-900">Dashboard</h1>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="grid w-full grid-cols-[minmax(0,1.35fr)_minmax(0,0.85fr)] gap-3 sm:flex sm:w-auto sm:flex-wrap">
-            <MonthPicker value={month} onChange={setMonth} />
-            <label className="flex min-w-0 items-center gap-3 rounded-[1.35rem] border border-white/80 bg-white/74 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.96),0_10px_20px_rgba(15,23,42,0.04)] backdrop-blur-[32px] backdrop-saturate-150 transition hover:bg-white/82">
-              <span className="shrink-0 text-sm font-semibold text-slate-700">Ano</span>
-              <input
-                type="number"
-                min={2020}
-                max={2030}
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-                className="w-full border-0 bg-transparent text-sm font-semibold text-slate-900 outline-none"
-              />
-            </label>
-          </div>
+          <MonthPicker value={month} onChange={setMonth} />
         </div>
       </div>
 
@@ -124,7 +118,9 @@ export function Dashboard() {
               key={p.id}
               portfolio={p}
               month={month}
-              year={year}
+              year={month.slice(0, 4)}
+              onRefresh={handleRefresh}
+              isRefreshing={isRefreshing}
             />
           ))}
         </div>
@@ -267,10 +263,14 @@ function PortfolioSummaryCard({
   portfolio,
   month,
   year,
+  onRefresh,
+  isRefreshing,
 }: {
   portfolio: { id: string; name: string };
   month: string;
   year: string;
+  onRefresh: () => void;
+  isRefreshing: boolean;
 }) {
   const [chartOpen, setChartOpen] = useState(false);
   const { hideValues } = useHideValues();
@@ -293,34 +293,52 @@ function PortfolioSummaryCard({
           <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-white/90" />
           <div className="pointer-events-none absolute left-6 top-5 h-14 w-20 rounded-full bg-white/16 blur-2xl" />
           <div className="pointer-events-none absolute bottom-0 right-8 h-10 w-24 rounded-full bg-white/16 blur-2xl" />
-          <CardHeader className="pr-12">
+          <CardHeader className="pr-24">
             <CardTitle className="text-slate-900">{portfolio.name}</CardTitle>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setChartOpen(true);
-              }}
-              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/90 bg-white/[0.9] text-slate-600 shadow-[0_10px_20px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.98)] backdrop-blur-[18px] backdrop-saturate-150 transition hover:bg-white hover:text-emerald-600"
-              title="Ver gráfico"
-              aria-label="Ver gráfico"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            <div className="absolute right-4 top-4 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onRefresh();
+                }}
+                disabled={isRefreshing}
+                title="Atualizar"
+                aria-label="Atualizar dashboard"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/90 bg-white/[0.9] text-slate-600 shadow-[0_10px_20px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.98)] backdrop-blur-[18px] backdrop-saturate-150 transition hover:bg-white hover:text-slate-900 disabled:opacity-60 disabled:pointer-events-none"
               >
-                <path d="M3 3v18h18" />
-                <path d="m19 9-5 5-4-4-3 3" />
-              </svg>
-            </button>
+                <RefreshCw
+                  className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+                />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setChartOpen(true);
+                }}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/90 bg-white/[0.9] text-slate-600 shadow-[0_10px_20px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.98)] backdrop-blur-[18px] backdrop-saturate-150 transition hover:bg-white hover:text-emerald-600"
+                title="Ver gráfico"
+                aria-label="Ver gráfico"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 3v18h18" />
+                  <path d="m19 9-5 5-4-4-3 3" />
+                </svg>
+              </button>
+            </div>
           </CardHeader>
           <CardContent className="relative flex flex-col gap-4">
           {summaryLoading ? (
