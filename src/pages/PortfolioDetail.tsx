@@ -96,7 +96,7 @@ export function PortfolioDetail() {
         {[1, 2, 3].map((item) => (
           <Card
             key={item}
-            className="glass-panel animate-pulse border-0 bg-transparent shadow-none"
+            className="glass-panel animate-pulse shadow-none"
           >
             <CardContent className="space-y-4 p-6">
               <div className="h-4 w-28 rounded-full bg-white/65" />
@@ -190,7 +190,7 @@ export function PortfolioDetail() {
         </div>
 
         {showBucketForm ? (
-          <Card className="glass-panel border-0 bg-transparent shadow-none">
+          <Card className="glass-panel shadow-none">
             <CardHeader>
               <CardTitle className="text-2xl font-semibold tracking-[-0.03em] text-slate-950">
                 Novo bucket
@@ -255,7 +255,7 @@ export function PortfolioDetail() {
             {[1, 2, 3].map((item) => (
               <Card
                 key={item}
-                className="glass-panel animate-pulse border-0 bg-transparent shadow-none"
+                className="glass-panel animate-pulse shadow-none"
               >
                 <CardContent className="space-y-4 p-6">
                   <div className="h-5 w-24 rounded-full bg-white/65" />
@@ -266,7 +266,7 @@ export function PortfolioDetail() {
             ))}
           </div>
         ) : bucketList.length === 0 ? (
-          <Card className="glass-panel border-0 bg-transparent shadow-none">
+          <Card className="glass-panel shadow-none">
             <CardContent className="flex flex-col items-start gap-3 p-8">
               <span className="inline-flex h-14 w-14 items-center justify-center rounded-[1.25rem] border border-white/70 bg-white/70 text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.96)]">
                 <Layers3 className="h-6 w-6" />
@@ -305,7 +305,7 @@ export function PortfolioDetail() {
         </div>
 
         {txList.length === 0 ? (
-          <Card className="glass-panel border-0 bg-transparent shadow-none">
+          <Card className="glass-panel shadow-none">
             <CardContent className="flex flex-col items-start gap-3 p-8">
               <span className="inline-flex h-14 w-14 items-center justify-center rounded-[1.25rem] border border-white/70 bg-white/70 text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.96)]">
                 <ReceiptText className="h-6 w-6" />
@@ -321,7 +321,7 @@ export function PortfolioDetail() {
             </CardContent>
           </Card>
         ) : (
-          <Card className="glass-panel border-0 bg-transparent shadow-none">
+          <Card className="glass-panel shadow-none">
             <CardContent className="p-0">
               <div className="glass-table-shell overflow-x-auto">
                 <table className="w-full min-w-[42rem] text-sm">
@@ -382,7 +382,7 @@ export function PortfolioDetail() {
 
 function MetricChip({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.35rem] border border-white/70 bg-white/70 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.96)]">
+    <div className="rounded-[1.35rem] border border-white/90 bg-white/85 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.98),0_12px_24px_rgba(15,23,42,0.08)]">
       <span className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
         {label}
       </span>
@@ -402,23 +402,23 @@ function BucketCard({
 }) {
   return (
     <Link to={`/portfolios/${portfolioId}/buckets/${bucket.id}`} className="group">
-      <Card className="glass-panel h-full border-0 bg-transparent shadow-none transition duration-300 group-hover:-translate-y-1">
+      <Card className="glass-panel h-full shadow-none transition duration-300 group-hover:-translate-y-1">
         <CardContent className="flex h-full flex-col gap-5 p-6">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
-              <span className="inline-flex rounded-full border border-white/75 bg-white/72 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+              <span className="inline-flex rounded-full border border-white/90 bg-white/88 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
                 {bucket.reference_currency}
               </span>
               <h3 className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">
                 {bucket.name}
               </h3>
             </div>
-            <span className="flex h-12 w-12 items-center justify-center rounded-full border border-white/75 bg-white/72 text-slate-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.96)] transition group-hover:text-blue-600">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full border border-white/90 bg-white/88 text-slate-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.98),0_10px_20px_rgba(15,23,42,0.08)] transition group-hover:text-blue-600">
               <ArrowRight className="h-5 w-5" />
             </span>
           </div>
 
-          <div className="rounded-[1.25rem] border border-white/70 bg-white/65 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]">
+          <div className="rounded-[1.25rem] border border-white/90 bg-white/86 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.98),0_10px_22px_rgba(15,23,42,0.07)]">
             <span className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
               Tipo
             </span>

@@ -225,24 +225,24 @@ export function Portfolios() {
         <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {list.map((portfolio, index) => (
             <Link key={portfolio.id} to={`/portfolios/${portfolio.id}`} className="group">
-              <Card className="glass-panel h-full border-0 bg-transparent shadow-none transition duration-300 group-hover:-translate-y-1">
+              <Card className="glass-panel h-full shadow-none transition duration-300 group-hover:-translate-y-1">
                 <CardHeader className="gap-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-2">
-                      <span className="inline-flex rounded-full border border-white/75 bg-white/72 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                      <span className="inline-flex rounded-full border border-white/90 bg-white/88 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
                         Portfolio {String(index + 1).padStart(2, "0")}
                       </span>
                       <CardTitle className="text-[1.65rem] font-semibold tracking-[-0.04em] text-slate-950">
                         {portfolio.name}
                       </CardTitle>
                     </div>
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full border border-white/75 bg-white/72 text-slate-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.96)] transition group-hover:text-blue-600">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full border border-white/90 bg-white/88 text-slate-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.98),0_10px_20px_rgba(15,23,42,0.08)] transition group-hover:text-blue-600">
                       <ArrowRight className="h-5 w-5" />
                     </span>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="rounded-[1.35rem] border border-white/70 bg-white/65 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]">
+                  <div className="rounded-[1.35rem] border border-white/90 bg-white/86 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.98),0_10px_22px_rgba(15,23,42,0.07)]">
                     <span className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
                       Moeda base
                     </span>
@@ -250,7 +250,7 @@ export function Portfolios() {
                       {portfolio.base_currency}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between rounded-[1.15rem] border border-white/60 bg-white/55 px-4 py-3 text-sm text-slate-600">
+                  <div className="flex items-center justify-between rounded-[1.15rem] border border-white/85 bg-white/82 px-4 py-3 text-sm text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.96)]">
                     <span>Navegue para os detalhes do portfólio</span>
                     <span className="font-semibold text-slate-900">Abrir</span>
                   </div>

@@ -285,14 +285,14 @@ function PortfolioSummaryCard({
   return (
     <>
       <Link to={`/portfolios/${portfolio.id}`} className="group block">
-        <Card className="relative overflow-hidden rounded-[20px] border border-white/35 bg-white/[0.14] shadow-[0_10px_30px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-[24px] backdrop-saturate-150 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:bg-white/[0.18] group-hover:shadow-[0_14px_38px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.22)]">
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.24),rgba(255,255,255,0.08)_35%,rgba(255,255,255,0.03)_100%)]" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.22),transparent_55%),radial-gradient(circle_at_80%_18%,rgba(255,255,255,0.14),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(255,255,255,0.08),transparent_34%)]" />
-          <div className="pointer-events-none absolute inset-y-6 left-[34%] w-10 rounded-full bg-white/22 blur-xl" />
-          <div className="pointer-events-none absolute inset-y-8 left-[37%] w-3 rounded-full bg-white/36 blur-md" />
-          <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-white/70" />
-          <div className="pointer-events-none absolute left-6 top-5 h-14 w-20 rounded-full bg-white/12 blur-2xl" />
-          <div className="pointer-events-none absolute bottom-0 right-8 h-10 w-24 rounded-full bg-white/10 blur-2xl" />
+        <Card className="relative overflow-hidden rounded-[20px] border border-white/85 bg-white/[0.72] shadow-[0_20px_48px_rgba(15,23,42,0.12),inset_0_1px_0_rgba(255,255,255,0.95)] backdrop-blur-[26px] backdrop-saturate-150 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:bg-white/[0.8] group-hover:shadow-[0_24px_56px_rgba(15,23,42,0.16),inset_0_1px_0_rgba(255,255,255,0.98)]">
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.48),rgba(255,255,255,0.16)_35%,rgba(255,255,255,0.06)_100%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.34),transparent_55%),radial-gradient(circle_at_80%_18%,rgba(255,255,255,0.2),transparent_28%),radial-gradient(circle_at_50%_100%,rgba(255,255,255,0.12),transparent_34%)]" />
+          <div className="pointer-events-none absolute inset-y-6 left-[34%] w-10 rounded-full bg-white/34 blur-xl" />
+          <div className="pointer-events-none absolute inset-y-8 left-[37%] w-3 rounded-full bg-white/44 blur-md" />
+          <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-white/90" />
+          <div className="pointer-events-none absolute left-6 top-5 h-14 w-20 rounded-full bg-white/16 blur-2xl" />
+          <div className="pointer-events-none absolute bottom-0 right-8 h-10 w-24 rounded-full bg-white/16 blur-2xl" />
           <CardHeader className="pr-12">
             <CardTitle className="text-slate-900">{portfolio.name}</CardTitle>
             <button
@@ -302,7 +302,7 @@ function PortfolioSummaryCard({
                 e.stopPropagation();
                 setChartOpen(true);
               }}
-              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-white/[0.16] text-slate-600 shadow-[0_10px_20px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.22)] backdrop-blur-[18px] backdrop-saturate-150 transition hover:bg-white/[0.22] hover:text-emerald-600"
+              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/90 bg-white/[0.9] text-slate-600 shadow-[0_10px_20px_rgba(15,23,42,0.08),inset_0_1px_0_rgba(255,255,255,0.98)] backdrop-blur-[18px] backdrop-saturate-150 transition hover:bg-white hover:text-emerald-600"
               title="Ver gráfico"
               aria-label="Ver gráfico"
             >
@@ -348,25 +348,25 @@ function PortfolioSummaryCard({
             </div>
           ) : values ? (
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div>
+              <div className="rounded-[1rem] border border-white/85 bg-white/78 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.96)]">
                 <p className="text-slate-500">Início do mês</p>
                 <p className="font-medium text-slate-900">
                   {maskValue(formatCurrencyFromReal(values.start_value), hideValues)}
                 </p>
               </div>
-              <div>
+              <div className="rounded-[1rem] border border-white/85 bg-white/78 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.96)]">
                 <p className="text-slate-500">Fim do mês</p>
                 <p className="font-medium text-slate-900">
                   {maskValue(formatCurrencyFromReal(values.end_value), hideValues)}
                 </p>
               </div>
-              <div>
+              <div className="rounded-[1rem] border border-white/85 bg-white/78 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.96)]">
                 <p className="text-slate-500">Contribuição líquida</p>
                 <p className="font-medium text-slate-900">
                   {maskValue(formatCurrencyFromReal(values.net_contribution), hideValues)}
                 </p>
               </div>
-              <div>
+              <div className="rounded-[1rem] border border-white/85 bg-white/78 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.96)]">
                 <p className="text-slate-500">PnL do mês</p>
                 <p
                   className={`font-medium ${
@@ -402,7 +402,6 @@ function PortfolioSummaryCard({
         >
           <SummaryChart
             summaries={summaries ?? []}
-            portfolioName={portfolio.name}
             hideValues={hideValues}
           />
         </ChartModal>

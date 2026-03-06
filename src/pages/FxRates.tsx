@@ -56,7 +56,13 @@ export function FxRates() {
     });
   };
 
-  const latestRate = fxRates[0];
+  const latestRate = fxRates.reduce<(typeof fxRates)[number] | undefined>(
+    (latest, current) => {
+      if (!latest) return current;
+      return new Date(current.date) > new Date(latest.date) ? current : latest;
+    },
+    undefined
+  );
 
   return (
     <div className="flex flex-col gap-8">
@@ -91,8 +97,15 @@ export function FxRates() {
             />
             <MetricCard
               icon={CalendarClock}
-              label="Última data"
-              value={latestRate ? formatDate(latestRate.date) : "--"}
+              label="Cotação atual"
+              value={
+                latestRate
+                  ? `${latestRate.from_currency}/${latestRate.to_currency}: ${maskValue(
+                      latestRate.rate.toFixed(4),
+                      hideValues
+                    )}`
+                  : "--"
+              }
             />
           </div>
         </div>

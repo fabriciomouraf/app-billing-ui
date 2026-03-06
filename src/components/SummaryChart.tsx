@@ -1,12 +1,10 @@
 import {
   ComposedChart,
   Bar,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   type TooltipProps,
 } from "recharts";
@@ -39,25 +37,16 @@ interface ChartPoint {
   month: string;
   monthLabel: string;
   pnl: number;
-  pnlAcumulado: number;
-  valorFimMes: number;
 }
 
 function buildChartData(summaries: Summary[]): ChartPoint[] {
   const sorted = [...summaries].sort((a, b) => a.month.localeCompare(b.month));
-  const byYear: Record<string, number> = {};
 
   return sorted.map((s) => {
-    const [year] = s.month.split("-");
-    byYear[year] = (byYear[year] ?? 0) + s.pnl_brl / 100;
-    const pnlAcumulado = byYear[year] ?? 0;
-
     return {
       month: s.month,
       monthLabel: formatMonth(s.month),
       pnl: s.pnl_brl / 100,
-      pnlAcumulado,
-      valorFimMes: s.end_value_brl / 100,
     };
   });
 }
@@ -87,17 +76,7 @@ function CustomTooltip({
           </span>
         </span>
         <span className="text-slate-600">
-          PnL acum.:{" "}
-          <span
-            className={
-              point.pnlAcumulado >= 0 ? "text-emerald-600" : "text-red-600"
-            }
-          >
-            {maskValue(formatCurrencyFromReal(point.pnlAcumulado), hideValues)}
-          </span>
-        </span>
-        <span className="text-slate-600">
-          Valor fim mês: {maskValue(formatCurrencyFromReal(point.valorFimMes), hideValues)}
+          Apenas PnL do mês
         </span>
       </div>
     </div>
@@ -106,7 +85,6 @@ function CustomTooltip({
 
 interface SummaryChartProps {
   summaries: Summary[];
-  portfolioName: string;
   hideValues?: boolean;
 }
 
@@ -142,16 +120,7 @@ export function SummaryChart({ summaries, hideValues = false }: SummaryChartProp
           tickLine={false}
           axisLine={{ stroke: "#94a3b8" }}
         />
-        <YAxis
-          yAxisId="valor"
-          orientation="right"
-          tickFormatter={tickFormatter}
-          tick={{ fontSize: 11 }}
-          tickLine={false}
-          axisLine={{ stroke: "#94a3b8" }}
-        />
         <Tooltip content={<CustomTooltip hideValues={hideValues} />} />
-        <Legend />
         <Bar
           yAxisId="pnl"
           dataKey="pnl"
@@ -159,24 +128,6 @@ export function SummaryChart({ summaries, hideValues = false }: SummaryChartProp
           fill="#10b981"
           radius={[4, 4, 0, 0]}
           fillOpacity={0.8}
-        />
-        <Line
-          yAxisId="pnl"
-          type="monotone"
-          dataKey="pnlAcumulado"
-          name="PnL acumulado no ano"
-          stroke="#6366f1"
-          strokeWidth={2}
-          dot={{ fill: "#6366f1", r: 4 }}
-        />
-        <Line
-          yAxisId="valor"
-          type="monotone"
-          dataKey="valorFimMes"
-          name="Valor total fim do mês"
-          stroke="#0ea5e9"
-          strokeWidth={2}
-          dot={{ fill: "#0ea5e9", r: 4 }}
         />
       </ComposedChart>
     </ResponsiveContainer>

@@ -9,24 +9,24 @@ interface ChartModalProps {
 export function ChartModal({ title, children, onClose }: ChartModalProps) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="chart-modal-title"
     >
       <div
-        className="max-h-[90vh] w-full max-w-4xl overflow-auto rounded-xl bg-white shadow-xl"
+        className="glass-panel max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-[1.6rem] border border-white/85 bg-white/[0.76] shadow-[0_28px_60px_rgba(15,23,42,0.24)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+        <div className="relative flex items-center justify-between border-b border-white/75 bg-white/55 px-6 py-4">
           <h2 id="chart-modal-title" className="text-lg font-semibold text-slate-900">
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+            className="rounded-full border border-white/90 bg-white/85 p-2 text-slate-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.98),0_10px_22px_rgba(15,23,42,0.08)] transition hover:bg-white hover:text-slate-700"
             aria-label="Fechar"
           >
             <svg
@@ -45,7 +45,7 @@ export function ChartModal({ title, children, onClose }: ChartModalProps) {
             </svg>
           </button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="bg-white/48 p-6">{children}</div>
       </div>
     </div>
   );
